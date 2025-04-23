@@ -1,7 +1,6 @@
-# Use the official Node image
 FROM node:18-slim
 
-# Install required dependencies for Puppeteer
+# Install Chromium dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -12,8 +11,7 @@ RUN apt-get update && apt-get install -y \
     libatk1.0-0 \
     libcups2 \
     libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
+    libgdk-pixbuf2.0-0 \
     libnspr4 \
     libnss3 \
     libx11-xcb1 \
@@ -21,22 +19,21 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    --no-install-recommends \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    libdrm2 \
+    libgbm1 \
+    libu2f-udev \
+    libvulkan1 \
+    --no-install-recommends && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy package files and install
-COPY package*.json ./
-RUN npm install
-
-# Copy the rest of the app
+# Copy project
 COPY . .
 
-# Puppeteer fix: disable sandbox
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# Install dependencies
+RUN npm install
 
-# Start your app
+# Start the app
 CMD ["node", "index.js"]
