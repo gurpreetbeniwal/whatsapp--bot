@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: whatsapp-bulk
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
