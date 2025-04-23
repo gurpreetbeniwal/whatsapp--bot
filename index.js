@@ -26,6 +26,18 @@ client.on('ready', () => {
 
 client.initialize();
 
+// Minimal HTTP server for Render port detection
+const http = require('http');
+
+const PORT = process.env.PORT || 3000;
+
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('✅ WhatsApp Bulk Sender is running.\n');
+}).listen(PORT, '0.0.0.0', () => {
+  console.log(`🟢 HTTP server listening on port ${PORT}`);
+});
+
 function sendMessagesFromCSV() {
   const results = [];
 
