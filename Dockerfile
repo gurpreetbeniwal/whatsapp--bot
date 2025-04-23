@@ -1,39 +1,42 @@
-# Use Node base image
-FROM node:18
+# Use the official Node image
+FROM node:18-slim
 
-# Install Chrome dependencies for puppeteer
+# Install required dependencies for Puppeteer
 RUN apt-get update && apt-get install -y \
-  wget \
-  ca-certificates \
-  fonts-liberation \
-  libappindicator3-1 \
-  libasound2 \
-  libatk-bridge2.0-0 \
-  libatk1.0-0 \
-  libcups2 \
-  libdbus-1-3 \
-  libgdk-pixbuf2.0-0 \
-  libnspr4 \
-  libnss3 \
-  libx11-xcb1 \
-  libxcomposite1 \
-  libxdamage1 \
-  libxrandr2 \
-  xdg-utils \
-  libu2f-udev \
-  libvulkan1 \
-  --no-install-recommends && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+    wget \
+    ca-certificates \
+    fonts-liberation \
+    libappindicator3-1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils \
+    --no-install-recommends \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Create app directory
 WORKDIR /app
 
-# Copy all files
-COPY . .
-
-# Install dependencies
+# Copy package files and install
+COPY package*.json ./
 RUN npm install
 
-# Run your app
+# Copy the rest of the app
+COPY . .
+
+# Puppeteer fix: disable sandbox
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Start your app
 CMD ["node", "index.js"]
